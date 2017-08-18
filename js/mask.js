@@ -7,6 +7,21 @@
  *  
  */
 
+const NO_POSITION = -1;
+const FIRST_POSITION = 0;
+const SECOND_POSITION = 1;
+const THIRD_POSITION = 2;
+const FOURTH_POSITION = 3;
+const FIFTH_POSITION = 4;
+
+const ONE_POSITION = 1;
+const TWO_POSITIONS = 2;
+const THREE_POSITIONS = 3;
+const FOUR_POSITIONS = 4;
+const FIVE_POSITIONS = 5;
+const SIX_POSITIONS = 6;
+const SEVEN_POSITIONS = 7;
+  
 var store = '';
 
  /**
@@ -30,22 +45,25 @@ $.fn.mask = function () {
   */
 function init(element, symbol) {
 
+    
     var value = validate(event, element);
-    var comma = value.search(/,/g);
-    var point = value.search(/\./g);
-    var verificador = value.charAt(value.length - 1);
-
+    var commaPosition = value.search(/,/g);
+    var pointPosition = value.search(/\./g);
+    const LAST_POSITION = value.length - 1;
+    var verify = value.charAt(LAST_POSITION);
+    
+    
     symbol = parse(symbol);
 
     value = value.replace(symbol, '');
 
-    if (verificador.search(/\D/g) != -1) {
-        value = value.substring(0, value.length - 1);
+    if (verify.search(/\D/g) != NO_POSITION) {
+        value = value.substring(FIRST_POSITION, LAST_POSITION);
     }
         
     value = commaManager(value);
 
-    value = pointManager(value, comma, point, symbol);
+    value = pointManager(value, commaPosition, pointPosition, symbol);
 
     element.val(changeElementValue(symbol, value));
 
@@ -60,7 +78,7 @@ function init(element, symbol) {
   * @return {String} valor do elemento HTML 
   */
 function changeElementValue(symbol, value) {
-    if (value.length == 0) {
+    if (value.length == FIRST_POSITION) {
         return '';
     } else {
         return symbol + value;
@@ -88,16 +106,16 @@ function parse(symbol) {
   * @return {String} valor do elemento HTML 
   */
 function commaManager(value) {
-    var comma = value.search(/,/g);
+    var commaPosition = value.search(/,/g);
 
-    if (value.length > 2) {
-        if (comma >= -1) {
+    if (value.length > THIRD_POSITION) {
+        if (commaPosition >= NO_POSITION) {
             value = addComma(value);
         }
     }
 
 
-    if (value.length == 3 && comma == 1) {
+    if (value.length == FOURTH_POSITION && commaPosition == SECOND_POSITION) {
         value = removeComma(value);
     }
 
@@ -112,7 +130,7 @@ function commaManager(value) {
   */
 function addComma(value) {
     value = value.replace(/,/g, '');
-    value = value.substring(0, value.length - 2) + ',' + value.substring(value.length - 2, value.length);
+    value = value.substring(FIRST_POSITION, value.length - TWO_POSITIONS) + ',' + value.substring(value.length - TWO_POSITIONS, value.length);
     return value;
 };
 
@@ -123,7 +141,7 @@ function addComma(value) {
   * @return {String} valor do elemento HTML 
   */
 function removeComma(value) {
-    value = value.substring(1, value.length);
+    value = value.substring(SECOND_POSITION, value.length);
     return value;
 };
 
@@ -131,28 +149,28 @@ function removeComma(value) {
   * @method pointManager()
   * @description insere ou remove pontos no valor 
   * @param {String} value valor do elemento HTML 
-  * @param {String} comma posição no valor do elemento HTML 
-  * @param {String} point posição no valor do elemento HTML 
+  * @param {String} commaPosition posição no valor do elemento HTML 
+  * @param {String} pointPosition posição no valor do elemento HTML 
   * @param {String} symbol valor do atributo data-symbol especificado no elemento HTML 
   * @return {String} valor do elemento HTML 
   */
-function pointManager(value, comma, point, symbol) {
+function pointManager(value, commaPosition, pointPosition, symbol) {
 
-    if (comma > -1) {
+    if (commaPosition > NO_POSITION) {
 
-        if(value.length >= 7 && value.length - (comma - symbol.length) == 3){
-            value = addPoint(value, comma - symbol.length);
+        if(value.length >= SEVEN_POSITIONS && value.length - (commaPosition - symbol.length) == THREE_POSITIONS){
+            value = addPoint(value, commaPosition - symbol.length);
         }
 
-        if (value.length >= 7 && value.length - comma == (4 - symbol.length)) {
-            value = addPoint(value, comma - symbol.length);
+        if (value.length >= SEVEN_POSITIONS && value.length - commaPosition == (FOUR_POSITIONS - symbol.length)) {
+            value = addPoint(value, commaPosition - symbol.length);
         }
 
-        if (point > -1 && value.length - comma == (2 - symbol.length)) {
+        if (pointPosition > NO_POSITION && value.length - commaPosition == (TWO_POSITIONS - symbol.length)) {
             value = removePoint(value);
         }
 
-        if (point > -1 && value.length - comma == (3 - symbol.length)) {
+        if (pointPosition > NO_POSITION && value.length - commaPosition == (THREE_POSITIONS - symbol.length)) {
             value = removePoint(value);
         }
     }
@@ -168,23 +186,23 @@ function pointManager(value, comma, point, symbol) {
   * @param {String} comma posição no valor do elemento HTML 
   * @return {String} valor do elemento HTML 
   */
-function addPoint(value, comma) {
+function addPoint(value, commaPosition) {
 
     var left = '';
     var right = '';
 
-    left = value.substring(0, comma + 1);
-    right = value.substring(comma + 1, value.length);
+    left = value.substring(FIRST_POSITION, commaPosition + ONE_POSITION);
+    right = value.substring(commaPosition + ONE_POSITION, value.length);
     left = left.replace(/\./g, '');
 
     var temporary = '';
-    var count = 0;
-    for (var i = left.length - 1; i >= 0; i--) {
+    var count = FIRST_POSITION;
+    for (var i = left.length - ONE_POSITION; i >= FIRST_POSITION; i--) {
         temporary = left.charAt(i) + temporary;
         count++;
-        if (count == 3 && i > 0) {
+        if (count == FOURTH_POSITION && i > FIRST_POSITION) {
             temporary = '.' + temporary;
-            count = 0;
+            count = FIRST_POSITION;
         }
     }
     value = temporary + right;
@@ -205,18 +223,18 @@ function removePoint(value) {
     var right = '';
 
     value = value.replace(/\./g, '');
-    left = value.substring(0, value.length - 3);
-    right = value.substring(value.length - 3, value.length);
+    left = value.substring(FIRST_POSITION, value.length - THREE_POSITIONS);
+    right = value.substring(value.length - THREE_POSITIONS, value.length);
 
     var temporary = '';
-    var count = 0;
+    var count = FIRST_POSITION;
 
-    for (var i = left.length - 1; i >= 0; i--) {
+    for (var i = left.length - ONE_POSITION; i >= FIRST_POSITION; i--) {
         temporary = left.charAt(i) + temporary;
         count++;
-        if (count == 3 && i > 0) {
+        if (count == FOURTH_POSITION && i > FIRST_POSITION) {
             temporary = '.' + temporary;
-            count = 0;
+            count = FIRST_POSITION;
         }
     }
     value = temporary + right;
@@ -231,7 +249,7 @@ function removePoint(value) {
   * @return {String} valor do elemento HTML  
   */
 function validate(event, element) {
-    if (event.key.search(/[\d]/g) != -1) {
+    if (event.key.search(/[\d]/g) != NO_POSITION) {
         return element.val();
     } else if (event.key == 'Backspace') {
         return element.val();
